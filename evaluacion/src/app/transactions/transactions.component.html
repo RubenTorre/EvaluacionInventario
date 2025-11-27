@@ -1,0 +1,85 @@
+<div class="p-6 bg-gray-100 min-h-screen">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">Transacciones</h1>
+        <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" routerLink="/transactions/new">
+            Nueva Transacción
+        </button>
+    </div>
+
+   <div class="mb-4 flex flex-wrap gap-4 items-center">
+  <input
+    type="text"
+    placeholder="Filtrar por tipo"
+    [(ngModel)]="filterType"
+    class="px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 w-64"
+  />
+
+  <input
+    type="date"
+    [(ngModel)]="filterStartDate" aria-label="fechainicio"
+    class="px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+  />
+
+  <input
+    type="date"
+    [(ngModel)]="filterEndDate" aria-label="fechafin"
+    class="px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+  />
+
+  <button
+    (click)="clearFilters()"
+    class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
+  >
+    Limpiar
+  </button>
+
+  <button
+    (click)="loadTransactions()"
+    class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+  >
+    Filtrar
+  </button>
+</div>
+
+    <div class="overflow-x-auto bg-white rounded shadow">
+        <table class="min-w-full">
+            <thead class="bg-gray-200">
+                <tr>
+                    <th class="px-4 py-2 text-left">ID</th>
+                    <th class="px-4 py-2 text-left">Fecha</th>
+                    <th class="px-4 py-2 text-left">Tipo</th>
+                    <th class="px-4 py-2 text-left">Producto</th>
+                    <th class="px-4 py-2 text-left">Cantidad</th>
+                    <th class="px-4 py-2 text-left">Precio Total</th>
+                    <th class="px-4 py-2 text-left">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let t of transactions" class="border-b">
+                    <td class="px-4 py-2">{{ t.id }}</td>
+                    <td class="px-4 py-2">{{ t.date | date:'yyyy-MM-dd' }}</td>
+                    <td class="px-4 py-2">{{ t.type }}</td>
+                    <td class="px-4 py-2">{{ t.productName }}</td>
+                    <td class="px-4 py-2">{{ t.quantity }}</td>
+                    <td class="px-4 py-2">{{ t.totalPrice | currency }}</td>
+                    <td class="px-4 py-2 flex gap-2">
+                        <button class="bg-yellow-400 px-2 py-1 rounded" (click)="editTransaction(t)">
+                            Editar
+                        </button>
+                        <button class="bg-red-500 px-2 py-1 rounded text-white" (click)="deleteTransaction(t)">
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-4 flex justify-end gap-2">
+        <button (click)="page = page-1; loadTransactions()" [disabled]="page <= 1"
+            class="px-3 py-1 bg-gray-300 rounded">Anterior</button>
+        <span class="px-3 py-1">{{page}}</span>
+        <button (click)="page = page+1; loadTransactions()" [disabled]="page * pageSize >= totalItems"
+            class="px-3 py-1 bg-gray-300 rounded">Siguiente</button>
+    </div>
+</div>

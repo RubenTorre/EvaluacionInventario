@@ -1,0 +1,67 @@
+<form (ngSubmit)="save()" class="flex flex-col gap-6 max-w-md mx-auto p-6 bg-white rounded-lg shadow-sm border border-gray-100">
+  
+ 
+  <div class="flex flex-col gap-1">
+    <label class="text-sm font-medium text-gray-700">Tipo de transacción</label>
+    <select [(ngModel)]="transaction.type" name="type" aria-label="tipotransaccion"
+            class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+      <option value="" disabled class="text-gray-400">Seleccionar tipo</option>
+      <option value="compra" class="text-gray-700">Compra</option>
+      <option value="venta" class="text-gray-700">Venta</option>
+    </select>
+  </div>
+
+  <div class="flex flex-col gap-1 relative">
+    <label class="text-sm font-medium text-gray-700">Buscar producto</label>
+    <input type="text" [(ngModel)]="productSearch" name="productSearch"
+           (input)="filterProducts()" placeholder="Escribe para buscar..."
+           class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"/>
+
+    <ul *ngIf="showSuggestions" class="absolute top-full z-10 bg-white border border-gray-300 rounded-lg w-full max-h-60 overflow-auto mt-1 shadow-lg">
+      <li *ngFor="let p of filteredProducts" (click)="selectProduct(p)"
+          class="p-3 border-b border-gray-100 last:border-b-0 hover:bg-blue-50 cursor-pointer transition-colors duration-150">
+        {{ p.name }}
+      </li>
+    </ul>
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label class="text-sm font-medium text-gray-700">Cantidad</label>
+    <input type="number" [(ngModel)]="transaction.quantity" name="quantity" aria-label="cantidad"
+           class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" 
+           (input)="updateTotalPrice()" min="1">
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label class="text-sm font-medium text-gray-700">Precio unitario</label>
+    <input type="number" [(ngModel)]="transaction.unitPrice" name="unitPrice" aria-label="precio"
+           class="p-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-600 font-medium cursor-not-allowed"
+           readonly>
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label class="text-sm font-medium text-gray-700">Precio total</label>
+    <input type="number" [(ngModel)]="transaction.totalPrice" name="totalPrice" aria-label="precio"
+           class="p-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-600 font-medium cursor-not-allowed"
+           readonly>
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label class="text-sm font-medium text-gray-700">Detalles</label>
+    <textarea [(ngModel)]="transaction.details" name="details" placeholder="Agregar detalles adicionales..."
+              class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
+              rows="3"></textarea>
+  </div>
+
+  <div class="flex justify-between gap-3 mt-2">
+    <button type="submit" 
+            class="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200">
+      Guardar
+    </button>
+    <button type="button" (click)="cancel()" 
+            class="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-300 focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-200">
+      Cancelar
+    </button>
+  </div>
+
+</form>
