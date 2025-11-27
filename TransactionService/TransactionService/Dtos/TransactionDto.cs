@@ -6,7 +6,7 @@
         public DateTime Date { get; set; }
         public string Type { get; set; } = null!;
         public int ProductId { get; set; }
-        public string ProductName { get; set; } = null!; // nuevo campo
+        public string ProductName { get; set; } = null!; 
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal TotalPrice { get; set; }

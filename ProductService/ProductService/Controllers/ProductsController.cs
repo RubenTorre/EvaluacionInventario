@@ -143,11 +143,11 @@ namespace ProductService.Controllers
             if (existing == null)
                 return NotFound();
 
-            // Validar nombre duplicado
+            
             if (_db.Products.Any(p => p.Name == product.Name && p.Id != id))
                 return BadRequest("Ya existe un producto con este nombre.");
 
-            // Actualizar campos
+           
             existing.Name = product.Name;
             existing.Category = product.Category;
             existing.Description = product.Description;

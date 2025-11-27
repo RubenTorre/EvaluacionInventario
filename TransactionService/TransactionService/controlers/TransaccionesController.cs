@@ -31,11 +31,10 @@ namespace TransactionService.Controllers
         {
             var query = _context.Transactions.AsQueryable();
 
-            // Filtro por tipo
             if (!string.IsNullOrEmpty(type))
                 query = query.Where(t => t.Type.ToLower() == type.ToLower());
 
-            // Filtro por rango de fechas (solo fecha)
+            
             if (startDate.HasValue)
                 query = query.Where(t => t.Date.Date >= startDate.Value.Date);
 
@@ -44,14 +43,13 @@ namespace TransactionService.Controllers
 
             var totalItems = await query.CountAsync();
 
-            // Paginación
+           
             var transactionsPage = await query
                 .OrderByDescending(t => t.Date)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
-            // Traer nombres de productos desde ProductService
             var client = _clientFactory.CreateClient();
             client.BaseAddress = new Uri("http://localhost:5088");
 
@@ -65,7 +63,7 @@ namespace TransactionService.Controllers
                 }
                 catch
                 {
-                    // ignorar si no existe producto
+                    
                 }
 
                 transactionDtos.Add(new TransactionDto
@@ -123,13 +121,12 @@ namespace TransactionService.Controllers
             }
 
             var client = _clientFactory.CreateClient();
-            client.BaseAddress = new Uri("http://localhost:5088"); // Cambiar según ProductService
+            client.BaseAddress = new Uri("http://localhost:5088"); 
 
             HttpResponseMessage stockResponse;
 
             if (transaction.Type.ToLower() == "venta")
             {
-                // 1️⃣ Obtener el producto desde ProductService
                 var productResponse = await client.GetAsync($"/api/products/{transaction.ProductId}");
                 if (!productResponse.IsSuccessStatusCode)
                     return BadRequest("Producto no encontrado");
@@ -138,13 +135,11 @@ namespace TransactionService.Controllers
                 if (product == null)
                     return BadRequest("Producto inválido");
 
-                // 2️⃣ Verificar stock disponible
                 if (product.Stock < transaction.Quantity)
                 {
                     return BadRequest($"No se puede realizar la venta. Stock insuficiente: {product.Stock} disponibles.");
                 }
 
-                // 3️⃣ Si hay stock suficiente, decrementar
                 stockResponse = await client.PostAsJsonAsync(
                     $"/api/products/{transaction.ProductId}/decrement",
                     new { quantity = transaction.Quantity }
@@ -156,7 +151,7 @@ namespace TransactionService.Controllers
                     return BadRequest($"Error al decrementar stock: {errorMsg}");
                 }
             }
-            else // compra
+            else 
             {
                 stockResponse = await client.PostAsJsonAsync(
                     $"/api/products/{transaction.ProductId}/increment",
@@ -171,7 +166,6 @@ namespace TransactionService.Controllers
             }
 
 
-            // Guardar transacción
             transaction.CreatedAt = DateTime.UtcNow;
             if (transaction.Date == default)
                 transaction.Date = DateTime.UtcNow;
@@ -187,7 +181,6 @@ namespace TransactionService.Controllers
             });
         }
 
-        // Clase auxiliar para leer stock desde ProductService
         public class StockErrorResponse
         {
             public string Message { get; set; } = "";
@@ -216,38 +209,31 @@ namespace TransactionService.Controllers
             var client = _clientFactory.CreateClient();
             client.BaseAddress = new Uri("http://localhost:5088");
 
-            // Obtener el producto
             var productResponse = await client.GetAsync($"/api/products/{updatedTransaction.ProductId}");
             if (!productResponse.IsSuccessStatusCode) return BadRequest("Producto no encontrado");
             var product = await productResponse.Content.ReadFromJsonAsync<ProductDto>();
             if (product == null) return BadRequest("Producto inválido");
 
-            // Ajuste de stock según el tipo de transacción
             if (transaction.Type.ToLower() == "venta")
             {
-                // devolver stock original primero
                 await client.PostAsJsonAsync($"/api/products/{transaction.ProductId}/increment",
                                             new { quantity = transaction.Quantity });
 
-                // verificar si hay suficiente stock para la nueva venta
                 if (product.Stock < updatedTransaction.Quantity)
                     return BadRequest($"No se puede realizar la venta. Stock insuficiente: {product.Stock} disponibles.");
 
-                // decrementar stock por la nueva cantidad
                 await client.PostAsJsonAsync($"/api/products/{updatedTransaction.ProductId}/decrement",
                                              new { quantity = updatedTransaction.Quantity });
             }
             else if (transaction.Type.ToLower() == "compra")
             {
-                // restar stock original
                 await client.PostAsJsonAsync($"/api/products/{transaction.ProductId}/decrement",
                                              new { quantity = transaction.Quantity });
-                // sumar stock nuevo
+            
                 await client.PostAsJsonAsync($"/api/products/{updatedTransaction.ProductId}/increment",
                                              new { quantity = updatedTransaction.Quantity });
             }
 
-            // Actualizar campos
             transaction.Quantity = updatedTransaction.Quantity;
             transaction.UnitPrice = updatedTransaction.UnitPrice;
             transaction.TotalPrice = updatedTransaction.TotalPrice;

@@ -11,3 +11,4 @@ wwwroot\images\81256a00f5306f375fb29619931929dc.jpg
 wwwroot\images\ChatGPT Image 14 jul 2025, 22_51_39.png
 wwwroot\images\ChatGPT Image 16 jul 2025, 16_44_17.png
 wwwroot\images\HD-wallpaper-ldu-2-ldu-liga-de-quito.jpg
+wwwroot\images\wp4201309.jpg
