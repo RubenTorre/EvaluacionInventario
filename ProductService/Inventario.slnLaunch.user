@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "Nuevo perfil",
+    "Projects": [
+      {
+        "Path": "ProductService\\ProductService.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "..\\TransactionService\\TransactionService\\TransactionService.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]
